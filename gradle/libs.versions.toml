@@ -8,8 +8,9 @@ lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.8.0"
 composeBom = "2024.04.01"
 retrofit = "2.11.0"
-kotlin = "2.0.0"
+kotlin = "2.0.20"
 moshi = "1.15.1"
+converter_moshi = "2.11.0"
 loggingInterceptorVersion = "4.12.0"
 coroutines = "1.3.9"
 
@@ -31,8 +32,8 @@ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
 com_squareup_retrofit2 = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 com_squareup_moshi = { group = "com.squareup.moshi", name = "moshi", version.ref = "moshi" }
-com_squareup_converter_moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "moshi" }
 com_squareup_moshi-kotlin = { group = "com.squareup.moshi", name = "moshi-kotlin", version.ref = "moshi" }
+com_squareup_converter_moshi = { group = "com.squareup.retrofit2", name = "converter-moshi", version.ref = "converter_moshi" }
 com_squareup_moshi-kotlin-codegen = { group = "com.squareup.moshi", name = "moshi-kotlin-codegen", version.ref = "moshi" }
 com_squareup_okhttp3_logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "loggingInterceptorVersion" }
 kotlinx-coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }

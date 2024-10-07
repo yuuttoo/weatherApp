@@ -25,7 +25,13 @@ android {
         buildConfigField(
             "String",
             "WEATHER_KEY",
-            "\"${project.findProperty("WEATHER_KEY")}\""
+            "\"${properties["WEATHER_KEY"]}\""
+        )
+
+        buildConfigField(
+            "String",
+            "BASE_URL",
+            "\"${properties["BASE_URL"]}\""
         )
     }
 
