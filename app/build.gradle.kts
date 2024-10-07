@@ -2,6 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
+    id("com.google.devtools.ksp")
+
+
 }
 
 android {
@@ -75,5 +78,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.com.squareup.retrofit2)
+    implementation(libs.com.squareup.moshi)
+    implementation(libs.com.squareup.converter.moshi)
+    implementation(libs.com.squareup.moshi.kotlin)
+    ksp(libs.com.squareup.moshi.kotlin.codegen)
+    implementation(libs.com.squareup.okhttp3.logging.interceptor)
+    implementation(libs.kotlinx.coroutines)
+
+
 
 }
