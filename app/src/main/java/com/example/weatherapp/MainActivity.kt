@@ -30,9 +30,8 @@ val service: ApiService = retrofit
 private fun fetchWeatherData() {
     // Call the API
     val listCall: Call<WeatherResponse> = service.fetchWeather(
-        "Yunlin", BuildConfig.WEATHER_KEY
+        "Taipei", BuildConfig.WEATHER_KEY
     )
-
     // Enqueue the call for asynchronous execution
     listCall.enqueue(object : Callback<WeatherResponse> {
 
