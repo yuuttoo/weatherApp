@@ -1,4 +1,5 @@
 package com.example.weatherapp.ui
 
-class WeatherScreen {
+class WeatherScreen(viewModel: WeatherViewModel) {
+
 }

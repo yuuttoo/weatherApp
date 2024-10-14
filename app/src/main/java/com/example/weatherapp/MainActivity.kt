@@ -17,57 +17,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.weatherapp.data.model.WeatherResponse
 import com.example.weatherapp.network.ApiService
 import com.example.weatherapp.network.retrofit
+import com.example.weatherapp.ui.WeatherViewModel
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-val service: ApiService = retrofit
-    .create(ApiService::class.java)
+//val service: ApiService = retrofit
+//    .create(ApiService::class.java)
 
 
 
-private fun fetchWeatherData() {
-    // Call the API
-    val listCall: Call<WeatherResponse> = service.fetchWeather(
-        "Taipei", BuildConfig.WEATHER_KEY
-    )
-    // Enqueue the call for asynchronous execution
-    listCall.enqueue(object : Callback<WeatherResponse> {
 
-        override fun onResponse(
-            call: Call<WeatherResponse>,
-            response: Response<WeatherResponse>
-        ) {
-            // Check if the response is successful
-            if (response.isSuccessful) {
-                val weatherResponse = response.body()
-                // You can update the UI with the response here
-                weatherResponse?.let {
-                    Log.d("WeatherData", it.toString())
-                    // Example: Show a toast with the temperature
-                    //Toast.makeText(this@MainActivity, "Temp: ${it.temp}", Toast.LENGTH_LONG).show()
-                }
-            } else {
-                // Handle the error scenario
-                Log.e("API Error", response.errorBody()?.string() ?: "Unknown error")
-            }
-        }
-
-        override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
-            // Handle the failure scenario
-            Log.e("Network Error", t.message ?: "Unknown error")
-            //Toast.makeText(this@MainActivity, "Failed to fetch weather data", Toast.LENGTH_LONG).show()
-        }
-    })
-}
 
 
 class MainActivity : ComponentActivity() {
+    val vm = WeatherViewModel()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        fetchWeatherData()
+        vm.loadInfo()
         setContent {
             WeatherAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
