@@ -10,6 +10,7 @@ import com.example.weatherapp.network.retrofit
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -29,18 +30,36 @@ class WeatherViewModel: ViewModel() {
 //        loadInfo()
 //    }
 
-    fun loadInfo() {
-        retrofit.fetchWeather("Yunlin", BuildConfig.WEATHER_KEY).enqueue(object : Callback<WeatherResponse> {
+    fun loadInfo() {//default city
+        retrofit.fetchWeather(uiState.value.userInputCity, BuildConfig.WEATHER_KEY).enqueue(object : Callback<WeatherResponse> {
             override fun onResponse(call: Call<WeatherResponse>, response: Response<WeatherResponse>) {
                 //success
                 response.body()?.let { weatherResponse ->
                     Log.i("fetchWeather success", weatherResponse.toString())
-                    for (weatherInfo in weatherResponse.weatherInfo) {
-                        Log.i("WeatherResponse", "Weather ID: ${weatherInfo.id}")
-                        Log.i("WeatherResponse", "Main: ${weatherInfo.main}")
-                        Log.i("WeatherResponse", "Description: ${weatherInfo.description}")
-                        Log.i("WeatherResponse", "Icon: ${weatherInfo.icon}")
+                    _uiState.update {
+                        it.copy(
+                            city = it.city,
+                            main = it.main,
+                            icon = it.icon,
+                            temp = it.temp,
+                            minTemp = it.minTemp,
+                            maxTemp = it.maxTemp,
+                            pressure = it.pressure,
+                            wind = it.wind,
+                            humidity = it.humidity,
+                            weatherInfo = it.weatherInfo,
+                            userInputCity = ""
+                        )
                     }
+                    Log.i("fetchWeather uistate update", uiState.value.toString())
+
+
+//                    for (weatherInfo in weatherResponse.weatherInfo) {
+//                        Log.i("WeatherResponse", "Weather ID: ${weatherInfo.id}")
+//                        Log.i("WeatherResponse", "Main: ${weatherInfo.main}")
+//                        Log.i("WeatherResponse", "Description: ${weatherInfo.description}")
+//                        Log.i("WeatherResponse", "Icon: ${weatherInfo.icon}")
+//                    }
                 }
 
             }
@@ -50,39 +69,64 @@ class WeatherViewModel: ViewModel() {
             }
         })
     }
+
+
+    private fun fetchWeatherDataByCity(city: String) {
+        // Call the API
+        val listCall: Call<WeatherResponse> = retrofit.fetchWeather(
+           uiState.value.city , BuildConfig.WEATHER_KEY
+        )
+        // Enqueue the call for asynchronous execution
+        listCall.enqueue(object : Callback<WeatherResponse> {
+
+            override fun onResponse(
+                call: Call<WeatherResponse>,
+                response: Response<WeatherResponse>
+            ) {
+                // Check if the response is successful
+                if (response.isSuccessful) {
+                    val weatherResponse = response.body()
+                    // You can update the UI with the response here
+                    response.body()?.let { weatherResponse ->
+                        Log.i("fetchWeatherDataByCity success", weatherResponse.toString())
+                        _uiState.update {
+                            it.copy(
+                                city = it.city,
+                                main = it.main,
+                                icon = it.icon,
+                                temp = it.temp,
+                                minTemp = it.minTemp,
+                                maxTemp = it.maxTemp,
+                                pressure = it.pressure,
+                                wind = it.wind,
+                                humidity = it.humidity,
+                                weatherInfo = it.weatherInfo,
+                                userInputCity = ""
+                            )
+                        }
+                        Log.i("fetchWeather uistate update", uiState.value.toString())
+
+
+//                    for (weatherInfo in weatherResponse.weatherInfo) {
+//                        Log.i("WeatherResponse", "Weather ID: ${weatherInfo.id}")
+//                        Log.i("WeatherResponse", "Main: ${weatherInfo.main}")
+//                        Log.i("WeatherResponse", "Description: ${weatherInfo.description}")
+//                        Log.i("WeatherResponse", "Icon: ${weatherInfo.icon}")
+//                    }
+                    }
+
+                } else {
+                    // Handle the error scenario
+                    Log.e("API Error", response.errorBody()?.string() ?: "Unknown error")
+                }
+            }
+
+            override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
+                // Handle the failure scenario
+                Log.e("Network Error", t.message ?: "Unknown error")
+                //Toast.makeText(this@MainActivity, "Failed to fetch weather data", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
 }
 
-//private fun fetchWeatherData() {
-//    // Call the API
-//    val listCall: Call<WeatherResponse> = retrofit.fetchWeather(
-//        "Taipei", BuildConfig.WEATHER_KEY
-//    )
-//    // Enqueue the call for asynchronous execution
-//    listCall.enqueue(object : Callback<WeatherResponse> {
-//
-//        override fun onResponse(
-//            call: Call<WeatherResponse>,
-//            response: Response<WeatherResponse>
-//        ) {
-//            // Check if the response is successful
-//            if (response.isSuccessful) {
-//                val weatherResponse = response.body()
-//                // You can update the UI with the response here
-//                weatherResponse?.let {
-//                    Log.d("WeatherData", it.toString())
-//                    // Example: Show a toast with the temperature
-//                    //Toast.makeText(this@MainActivity, "Temp: ${it.temp}", Toast.LENGTH_LONG).show()
-//                }
-//            } else {
-//                // Handle the error scenario
-//                Log.e("API Error", response.errorBody()?.string() ?: "Unknown error")
-//            }
-//        }
-//
-//        override fun onFailure(call: Call<WeatherResponse>, t: Throwable) {
-//            // Handle the failure scenario
-//            Log.e("Network Error", t.message ?: "Unknown error")
-//            //Toast.makeText(this@MainActivity, "Failed to fetch weather data", Toast.LENGTH_LONG).show()
-//        }
-//    })
-//}
