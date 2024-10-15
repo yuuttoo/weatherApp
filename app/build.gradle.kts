@@ -90,7 +90,5 @@ dependencies {
     ksp(libs.com.squareup.moshi.kotlin.codegen)
     implementation(libs.com.squareup.okhttp3.logging.interceptor)
     implementation(libs.kotlinx.coroutines)
-
-
-
+    implementation(libs.coil.compose)
 }

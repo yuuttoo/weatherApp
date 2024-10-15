@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
@@ -29,26 +31,29 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.example.weatherapp.Helper
 import com.example.weatherapp.R
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@kotlin.OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WeatherScreen(
     viewModel: WeatherViewModel
@@ -59,8 +64,8 @@ fun WeatherScreen(
             topBar = {
                 TopAppBar(
                     colors = topAppBarColors(
-                        containerColor = Color.Black,//MaterialTheme.colorScheme.primaryContainer,
-                        titleContentColor = Color.White//MaterialTheme.colorScheme.primary,
+                        containerColor = Color.Black,
+                        titleContentColor = Color.White
                     ),
                     title = {
                         Text("Weather")
@@ -79,15 +84,21 @@ fun WeatherScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(top = 20.dp)
                 ) {
-                    CityInputTextField()
+                    CityInputTextField(
+                        cityName = weatherUiState.userInputCity,
+                        onSearchClick = { cityName ->
+                            viewModel.fetchWeatherDataByCity(cityName)
+                            Log.i("cityName", cityName)
+                        }
+                    )
                     Spacer(modifier = Modifier.padding(top = 30.dp))
-                    CityText()
+                    CityText(weatherUiState.city)
                     Spacer(modifier = Modifier.padding(top = 40.dp))
-                    WeatherIconWithDescription()
+                    WeatherIconWithDescription(weatherUiState.icon, weatherUiState.main)
                     Spacer(modifier = Modifier.padding(top = 40.dp))
-                    TempCard()
+                    TempCard(Helper().kelvinToCelsius(weatherUiState.minTemp), Helper().kelvinToCelsius(weatherUiState.temp), Helper().kelvinToCelsius(weatherUiState.maxTemp))
                     Spacer(modifier = Modifier.padding(top = 10.dp))
-                    OtherInfoCard()
+                    OtherInfoCard(weatherUiState.pressure, weatherUiState.wind, weatherUiState.humidity)
                 }
             }
         }
@@ -97,16 +108,19 @@ fun WeatherScreen(
 
 
 @Composable
-fun CityInputTextField() {
-    var cityName by remember {  mutableStateOf("") }
+fun CityInputTextField(
+    cityName: String,
+    onSearchClick: (String) -> Unit
+    ) {
+    var text by remember {  mutableStateOf(cityName) }
     TextField(
-        value = cityName,
-        onValueChange = { cityName = it},
+        value = text,
+        onValueChange = { text = it},
         label = { Text("City") },
         trailingIcon = {
             IconButton(onClick = {
                 // Trigger the event when the search icon is clicked
-                onSearchClick(cityName)
+                onSearchClick(text)
             }) {
                 Icon(
                     imageVector = Icons.Outlined.Search,
@@ -115,40 +129,53 @@ fun CityInputTextField() {
             }
         },
         maxLines = 1,
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Search
+        ),
+        keyboardActions = KeyboardActions(
+            onSearch = {
+                onSearchClick(text)
+            }
+        )
+
+
     )
 }
 
-fun onSearchClick(cityName: String) {
-    Log.d("CitySearch", "Searching for city: $cityName")
-}
-
 @Composable
-fun CityText()
+fun CityText(cityName: String)
 {
     Text(
-        text = "Dehli",
-        fontSize = 50.sp,
+        text = cityName,
+        fontSize = 40.sp,
         color = Color.White,
         fontFamily = FontFamily.Monospace
     )
 }
 
 @Composable
-fun WeatherIconWithDescription()
+fun WeatherIconWithDescription(
+    icon: String,
+    desc: String
+)
 {
-    val image: Painter = painterResource(id = R.drawable.cloudy) // Replace with your actual image
+    val image: Painter = painterResource(id = R.drawable.cloudy)
+    val iconUrl = "https://openweathermap.org/img/wn/$icon@2x.png"
+    Log.i("icon", iconUrl)
+
     Column(
         modifier = Modifier
             .padding(top = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = image,
+        AsyncImage(
+            model = iconUrl,
             contentDescription = "Weather Icon",
-            modifier = Modifier.size(120.dp)
+            placeholder = image,
+            modifier = Modifier.size(120.dp),
         )
         Text(
-            text = "Mist",
+            text = desc,
             fontSize = 30.sp,
             color = Color.White,
             fontFamily = FontFamily.Monospace
@@ -157,7 +184,11 @@ fun WeatherIconWithDescription()
 }
 
 @Composable
-fun TempCard()
+fun TempCard(
+    minTemp: Int,
+    curTemp: Int,
+    maxTemp: Int
+)
 {
     Card(
         colors = CardDefaults.cardColors(
@@ -169,7 +200,7 @@ fun TempCard()
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp)
             .border(
-              border = BorderStroke(3.dp, Color.Cyan)
+                border = BorderStroke(3.dp, Color.Cyan)
             )
 
     ) {
@@ -179,7 +210,7 @@ fun TempCard()
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(//min
-                text = "27°C",
+                text = "$minTemp°C",
                 fontSize = 25.sp,
                 color = Color.White,
                 fontFamily = FontFamily.Monospace,
@@ -187,9 +218,8 @@ fun TempCard()
                 modifier = Modifier
                     .padding(top = 60.dp, start = 20.dp)
             )
-            //Spacer(modifier = Modifier.padding(start = 25.dp))
             Text(     //cur
-                text = "29°C",
+                text = "$curTemp°C",
                 fontSize = 35.sp,
                 color = Color.White,
                 fontFamily = FontFamily.Monospace,
@@ -197,9 +227,8 @@ fun TempCard()
                 modifier = Modifier
                     .padding(bottom = 20.dp)
             )
-            //Spacer(modifier = Modifier.padding(start = 25.dp, end = 10.dp))
             Text(     //max
-                text = "37°C",
+                text = "$maxTemp°C",
                 fontSize = 25.sp,
                 color = Color.White,
                 fontFamily = FontFamily.Monospace,
@@ -212,7 +241,11 @@ fun TempCard()
 }
 
 @Composable
-fun OtherInfoCard()
+fun OtherInfoCard(
+    pressure: Int,
+    wind: Double,
+    humidity: Int
+)
 {
     Card(
         colors = CardDefaults.cardColors(
@@ -228,18 +261,19 @@ fun OtherInfoCard()
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            DashboardIconWithText()
-            WindIconWithText()
-            HumidityIconWithText()
+            DashboardIconWithText(pressure)
+            WindIconWithText(wind)
+            HumidityIconWithText(humidity)
         }
     }
 }
 
 @Composable
-fun DashboardIconWithText()
+fun DashboardIconWithText(
+    pressure: Int
+)
 {
     val image: Painter = painterResource(id = R.drawable.ic_dashboard)
-
 
     Column(
         modifier = Modifier
@@ -258,7 +292,7 @@ fun DashboardIconWithText()
             fontFamily = FontFamily.Monospace
         )
         Text(
-            text = "1001 mb",
+            text = "$pressure mb",
             fontSize = 20.sp,
             color = Color.White,
             fontFamily = FontFamily.Monospace
@@ -268,7 +302,9 @@ fun DashboardIconWithText()
 }
 
 @Composable
-fun WindIconWithText()
+fun WindIconWithText(
+    wind: Double
+)
 {
     val image: Painter = painterResource(id = R.drawable.ic_wind)
 
@@ -289,7 +325,7 @@ fun WindIconWithText()
             fontFamily = FontFamily.Monospace
         )
         Text(
-            text = "4.94 km/h",
+            text = "$wind km/h",
             fontSize = 20.sp,
             color = Color.White,
             fontFamily = FontFamily.Monospace
@@ -299,7 +335,9 @@ fun WindIconWithText()
 }
 
 @Composable
-fun HumidityIconWithText()
+fun HumidityIconWithText(
+    humidity: Int
+)
 {
 
     val image: Painter = painterResource(id = R.drawable.ic_humidity) // Replace with your actual image
@@ -321,7 +359,7 @@ fun HumidityIconWithText()
             fontFamily = FontFamily.Monospace
         )
         Text(
-            text = "41%",
+            text = "$humidity%",
             fontSize = 20.sp,
             color = Color.White,
             fontFamily = FontFamily.Monospace
