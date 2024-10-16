@@ -91,4 +91,9 @@ dependencies {
     implementation(libs.com.squareup.okhttp3.logging.interceptor)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.coil.compose)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.androidx.arch.core.testing)
+    testImplementation(libs.io.mockk)
+    implementation(libs.lifecycle.viewmodel.compose)
+
 }

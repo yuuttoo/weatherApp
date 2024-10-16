@@ -4,7 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.weatherapp.BuildConfig
-import com.example.weatherapp.data.model.WeatherResponse
+import com.example.weatherapp.network.WeatherRepository
+import com.example.weatherapp.network.WeatherService
 import com.example.weatherapp.network.WeatherState
 import com.example.weatherapp.network.retrofit
 import kotlinx.coroutines.Dispatchers
@@ -14,12 +15,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 
-class WeatherViewModel : ViewModel() {
+// Mock the Retrofit service
+//val weatherService: WeatherService = mockk()
+
+// Mock the repository using the mocked service
+//val repository = WeatherRepository(weatherService)
+
+class WeatherViewModel() : ViewModel() {
 
     //Weather state using the sealed class
     private val _weatherState = MutableStateFlow<WeatherState>(WeatherState.Loading)

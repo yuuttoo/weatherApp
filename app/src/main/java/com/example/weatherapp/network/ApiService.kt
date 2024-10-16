@@ -18,18 +18,7 @@ interface ApiService {
         @Query("appid") appid: String,//api key
     ): Call<WeatherResponse>
 }
-//fun httpClient(loggingInterceptor: HttpLoggingInterceptor) {
-//    val loggingInterceptor = HttpLoggingInterceptor.Level.BODY
-//
-//    OkHttpClient.Builder()
-//        .addInterceptor(loggingInterceptor)
-//        .build()
-//}
-//fun okHttpClient(): OkHttpClient {
-//    val builder = OkHttpClient().newBuilder()
-//        .addInterceptor(loggingInterceptor)
-//    return builder.build()
-//}
+
 val retrofit = Retrofit.Builder()
     .baseUrl(BuildConfig.BASE_URL)
     .addConverterFactory(MoshiConverterFactory.create())

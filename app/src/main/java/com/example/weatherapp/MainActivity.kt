@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.weatherapp.data.model.WeatherResponse
 import com.example.weatherapp.network.ApiService
+import com.example.weatherapp.network.WeatherRepository
+import com.example.weatherapp.network.WeatherService
 import com.example.weatherapp.network.retrofit
 import com.example.weatherapp.ui.WeatherScreen
 import com.example.weatherapp.ui.WeatherUiState
@@ -28,6 +30,8 @@ import com.example.weatherapp.ui.theme.WeatherAppTheme
 
 class MainActivity : ComponentActivity() {
     val vm = WeatherViewModel()
+    //private lateinit var vm: WeatherViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
