@@ -1,6 +1,6 @@
 # 天氣 App
 
-![天氣 App 展示](WeatherApp.gif)
+![Uploading WeatherApp.gif…]()
 
 一個使用 **Kotlin** 開發的簡單天氣 App，用來顯示特定地點的即時天氣資訊。這個專案示範了如何運用 **Android Jetpack** 元件、**Coroutines** 和 **Flow** 來處理非同步操作並管理 UI 生命週期。
 
