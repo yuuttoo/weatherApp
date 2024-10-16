@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -50,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.weatherapp.Helper
 import com.example.weatherapp.R
+import com.example.weatherapp.data.model.WeatherState
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -58,6 +60,7 @@ import com.example.weatherapp.R
 fun WeatherScreen(
     viewModel: WeatherViewModel
 ) {
+    val weatherState by viewModel.weatherState.collectAsState()
     val weatherUiState by viewModel.uiState.collectAsState()
 
         Scaffold(
@@ -84,21 +87,37 @@ fun WeatherScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(top = 20.dp)
                 ) {
-                    CityInputTextField(
-                        cityName = weatherUiState.userInputCity,
-                        onSearchClick = { cityName ->
-                            viewModel.fetchWeatherDataByCity(cityName)
-                            Log.i("cityName", cityName)
+                    when (weatherState) {
+                        is WeatherState.Loading -> {
+                            CircularProgressIndicator(modifier = Modifier
+                                .align(Alignment.CenterHorizontally))
                         }
-                    )
-                    Spacer(modifier = Modifier.padding(top = 30.dp))
-                    CityText(weatherUiState.city)
-                    Spacer(modifier = Modifier.padding(top = 40.dp))
-                    WeatherIconWithDescription(weatherUiState.icon, weatherUiState.main)
-                    Spacer(modifier = Modifier.padding(top = 40.dp))
-                    TempCard(Helper().kelvinToCelsius(weatherUiState.minTemp), Helper().kelvinToCelsius(weatherUiState.temp), Helper().kelvinToCelsius(weatherUiState.maxTemp))
-                    Spacer(modifier = Modifier.padding(top = 10.dp))
-                    OtherInfoCard(weatherUiState.pressure, weatherUiState.wind, weatherUiState.humidity)
+                        is WeatherState.Success -> {
+                            CityInputTextField(
+                                cityName = weatherUiState.userInputCity,
+                                onSearchClick = { cityName ->
+                                    viewModel.fetchWeatherDataByCity(cityName)
+                                    Log.i("cityName", cityName)
+                                }
+                            )
+                            Spacer(modifier = Modifier.padding(top = 30.dp))
+                            CityText(weatherUiState.city)
+                            Spacer(modifier = Modifier.padding(top = 40.dp))
+                            WeatherIconWithDescription(weatherUiState.icon, weatherUiState.main)
+                            Spacer(modifier = Modifier.padding(top = 40.dp))
+                            TempCard(Helper().kelvinToCelsius(weatherUiState.minTemp), Helper().kelvinToCelsius(weatherUiState.temp), Helper().kelvinToCelsius(weatherUiState.maxTemp))
+                            Spacer(modifier = Modifier.padding(top = 10.dp))
+                            OtherInfoCard(weatherUiState.pressure, weatherUiState.wind, weatherUiState.humidity)
+                        }
+                        is WeatherState.Error -> {
+                            Text(
+                                text = (weatherState as WeatherState.Error).message,
+                                color = Color.Red,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            )
+                        }
+                    }
+
                 }
             }
         }
@@ -137,8 +156,6 @@ fun CityInputTextField(
                 onSearchClick(text)
             }
         )
-
-
     )
 }
 
