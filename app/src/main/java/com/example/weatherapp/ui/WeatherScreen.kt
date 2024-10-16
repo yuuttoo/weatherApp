@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.weatherapp.Helper
 import com.example.weatherapp.R
-import com.example.weatherapp.data.model.WeatherState
+import com.example.weatherapp.network.WeatherState
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
